@@ -133,7 +133,7 @@
     if ([@"requestAuthorization" isEqualToString:call.method]) {
         if (self.locationManager) {
             self.flutterResult = result;
-            [self.locationManager requestAlwaysAuthorization];
+            [self.locationManager requestWhenInUseAuthorization];
         } else {
             result(@(YES));
         }
@@ -329,8 +329,8 @@
             }
             if ([CLLocationManager locationServicesEnabled]) {
                 if ([CLLocationManager authorizationStatus] == kCLAuthorizationStatusNotDetermined) {
-                    //[self.locationManager requestWhenInUseAuthorization];
-                    [self.locationManager requestAlwaysAuthorization];
+                    [self.locationManager requestWhenInUseAuthorization];
+                    //[self.locationManager requestAlwaysAuthorization];
                     return;
                 } else if ([CLLocationManager authorizationStatus] == kCLAuthorizationStatusDenied) {
                     message = @"CLAuthorizationStatusDenied";
