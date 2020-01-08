@@ -134,6 +134,7 @@
         if (self.locationManager) {
             self.flutterResult = result;
             [self.locationManager requestWhenInUseAuthorization];
+            result(@(YES));
         } else {
             result(@(YES));
         }
