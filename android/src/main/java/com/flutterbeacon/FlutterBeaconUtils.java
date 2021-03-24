@@ -1,11 +1,14 @@
 package com.flutterbeacon;
 
+import android.util.Log;
+
 import org.altbeacon.beacon.Beacon;
 import org.altbeacon.beacon.Identifier;
 import org.altbeacon.beacon.MonitorNotifier;
 import org.altbeacon.beacon.Region;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -60,30 +63,66 @@ class FlutterBeaconUtils {
     return map;
   }
 
+  @SuppressWarnings("rawtypes")
   static Region regionFromMap(Map map) {
-    String identifier = "";
-    List<Identifier> identifiers = new ArrayList<>();
+    try {
+      String identifier = "";
+      List<Identifier> identifiers = new ArrayList<>();
 
-    Object objectIdentifier = map.get("identifier");
-    if (objectIdentifier instanceof String) {
-      identifier = objectIdentifier.toString();
+      Object objectIdentifier = map.get("identifier");
+      if (objectIdentifier instanceof String) {
+        identifier = objectIdentifier.toString();
+      }
+
+      Object proximityUUID = map.get("proximityUUID");
+
+      if (proximityUUID instanceof String) {
+        identifiers.add(Identifier.parse((String) proximityUUID));
+      }
+
+      Object major = map.get("major");
+      if (major instanceof Integer) {
+        identifiers.add(Identifier.fromInt((Integer) major));
+      }
+      Object minor = map.get("minor");
+      if (minor instanceof Integer) {
+        identifiers.add(Identifier.fromInt((Integer) minor));
+      }
+
+      return new Region(identifier, identifiers);
+    } catch (IllegalArgumentException e) {
+      Log.e("REGION", "Error : " + e);
+      return null;
     }
+  }
+
+  @SuppressWarnings("rawtypes")
+  static Beacon beaconFromMap(Map map) {
+    Beacon.Builder builder = new Beacon.Builder();
 
     Object proximityUUID = map.get("proximityUUID");
-
     if (proximityUUID instanceof String) {
-      identifiers.add(Identifier.parse((String) proximityUUID));
+      builder.setId1((String) proximityUUID);
     }
-
     Object major = map.get("major");
     if (major instanceof Integer) {
-      identifiers.add(Identifier.fromInt((Integer) major));
+      builder.setId2(major.toString());
     }
     Object minor = map.get("minor");
     if (minor instanceof Integer) {
-      identifiers.add(Identifier.fromInt((Integer) minor));
+      builder.setId3(minor.toString());
     }
 
-    return new Region(identifier, identifiers);
+    Object txPower = map.get("txPower");
+    if (txPower instanceof Integer) {
+      builder.setTxPower((Integer) txPower);
+    } else {
+      builder.setTxPower(-59);
+    }
+
+    builder.setDataFields(Collections.singletonList(0L));
+    builder.setManufacturer(0x004c);
+
+    return builder.build();
   }
 }
