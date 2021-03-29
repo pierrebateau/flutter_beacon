@@ -129,6 +129,14 @@ class FlutterBeacon {
     return BluetoothState.parse(status);
   }
 
+  /// Checks if "precise location" is enabled, that is needed for iOS 14+ to receive beacons
+  ///
+  /// For iOS, this returns false if the accuracyAuthorization is CLAccuracyAuthorizationReducedAccuracy
+  /// For Android, this function does nothing and returns true
+  Future<bool> get checkPreciseLocationAccuracy async {
+    return await _methodChannel.invokeMethod('checkPreciseLocationAccuracy');
+  }
+
   /// Request an authorization to the device.
   ///
   /// For Android, this will request a permission of `Manifest.permission.ACCESS_COARSE_LOCATION`.

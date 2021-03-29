@@ -192,6 +192,12 @@ public class FlutterBeaconPlugin implements FlutterPlugin, ActivityAware, Method
       return;
     }
 
+    if (call.method.equals("checkPreciseLocationAccuracy")) {
+      // Android does not have this functionality, so we always return true
+      result.success(true);
+      return;
+    }
+
     if (call.method.equals("checkLocationServicesIfEnabled")) {
       result.success(platform.checkLocationServicesIfEnabled());
       return;

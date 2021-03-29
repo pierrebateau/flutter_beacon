@@ -79,7 +79,7 @@
         result(@(YES));
         return;
     }
-    
+
     if ([@"initializeAndCheck" isEqualToString:call.method]) {
         [self initializeWithResult:result];
         return;
@@ -125,6 +125,29 @@
         }
         return;
     }
+
+    if ([@"checkPreciseLocationAccuracy" isEqualToString:call.method]) {
+        [self initializeLocationManager];
+
+        if (@available(iOS 14, *)) {
+            switch ([self.locationManager accuracyAuthorization]) {
+                case CLAccuracyAuthorizationReducedAccuracy:
+                    result(@(NO));
+                    return;
+
+                case CLAccuracyAuthorizationFullAccuracy:
+                    result(@(YES));
+                    return;
+
+                default:
+                    result(@(NO));
+                    return;
+            }
+        }
+
+        result(@(YES));
+        return;
+    }
     
     if ([@"checkLocationServicesIfEnabled" isEqualToString:call.method]) {
         result(@([CLLocationManager locationServicesEnabled]));
@@ -165,6 +188,8 @@
     }
     
     if ([@"requestAuthorization" isEqualToString:call.method]) {
+        [self initializeLocationManager];
+
         if (self.locationManager) {
             self.flutterResult = result;
             [self requestDefaultLocationManagerAuthorization];
