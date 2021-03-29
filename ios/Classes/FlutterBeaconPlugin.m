@@ -168,6 +168,7 @@
         if (self.locationManager) {
             self.flutterResult = result;
             [self requestDefaultLocationManagerAuthorization];
+            result(@(YES));
         } else {
             result(@(YES));
         }
