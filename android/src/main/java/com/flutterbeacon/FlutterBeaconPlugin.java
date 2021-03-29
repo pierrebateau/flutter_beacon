@@ -103,6 +103,11 @@ public class FlutterBeaconPlugin implements FlutterPlugin, ActivityAware, Method
     }
 
     beaconManager = BeaconManager.getInstanceForApplication(activity.getApplicationContext());
+
+    // Don't use scheduled scan jobs, we only want to scan in the foreground. This fixes a problem
+    // on Android 10 (Xiaomi) devices where it can take up to a few minutes before the job starts
+    beaconManager.setEnableScheduledScanJobs(false);
+
     if (!beaconManager.getBeaconParsers().contains(iBeaconLayout)) {
       beaconManager.getBeaconParsers().clear();
       beaconManager.getBeaconParsers().add(iBeaconLayout);
