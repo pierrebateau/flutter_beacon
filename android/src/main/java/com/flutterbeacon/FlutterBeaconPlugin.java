@@ -3,6 +3,7 @@ package com.flutterbeacon;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.os.Build;
 
 import androidx.annotation.NonNull;
 
@@ -111,7 +112,11 @@ public class FlutterBeaconPlugin implements FlutterPlugin, ActivityAware, Method
 
     platform = new FlutterPlatform(activity);
     beaconScanner = new FlutterBeaconScanner(this, activity);
-    beaconBroadcast = new FlutterBeaconBroadcast(activity, iBeaconLayout);
+
+    // Transmitting beacons is not supported on API versions < 19
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+      beaconBroadcast = new FlutterBeaconBroadcast(activity, iBeaconLayout);
+    }
 
     channel = new MethodChannel(messenger, "flutter_beacon");
     channel.setMethodCallHandler(this);
